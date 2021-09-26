@@ -73,7 +73,9 @@ class Player:
                 await y.delete()
                 return
             except KeyError as e:
-                await message.reply(f"{type(e).__name__}: {e}\nplease tell owner about this.")
+                await message.reply(
+                    f"{type(e).__name__}: {e}\nplease tell owner about this."
+                )
                 del playlist[chat_id]
                 return
         y = await message.reply(get_message(chat_id, "process"))
@@ -115,12 +117,12 @@ class Player:
         chat_id = message.chat.id
         if len(playlist[chat_id]) > 1:
             playlist[chat_id].pop(0)
-            query = playlist[chat_id][0]['query']
+            query = playlist[chat_id][0]["query"]
             url = await get_youtube_stream(query)
             await asyncio.sleep(3)
             await client[chat_id].change_stream(
                 chat_id,
-                AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo())
+                AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo()),
             )
             await asyncio.sleep(3)
             await message.reply(f"Skipped track, and playing {query}")
@@ -169,7 +171,7 @@ class Player:
         if client[chat_id].get_call(chat_id):
             await client[chat_id].change_volume_call(chat_id, vol)
             await message.reply(f"Volume changed to {vol}%")
-    
+
 
 player = Player(PyTgCalls(user))
 
@@ -182,13 +184,13 @@ async def stream_ended(pytgcalls: PyTgCalls, update: Update):
     print(pytgcalls)
     if len(playlist[chat_id]) > 1:
         playlist[chat_id].pop(0)
-        query = playlist[chat_id][0]['query']
+        query = playlist[chat_id][0]["query"]
         url = await get_youtube_stream(query)
         await asyncio.sleep(3)
         await client[chat_id].change_stream(
             chat_id,
             AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo()),
-            stream_type=StreamType().pulse_stream
+            stream_type=StreamType().pulse_stream,
         )
         await asyncio.sleep(3)
         return
