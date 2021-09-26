@@ -72,8 +72,8 @@ class Player:
                 await asyncio.sleep(10)
                 await y.delete()
                 return
-            except KeyError:
-                await message.reply("restart the bot")
+            except KeyError as e:
+                await message.reply(f"{type(e).__name__}: {e}\nplease tell owner about this.")
                 del playlist[chat_id]
                 return
         y = await message.reply(get_message(chat_id, "process"))
@@ -179,6 +179,7 @@ async def stream_ended(pytgcalls: PyTgCalls, update: Update):
     playlist = player.playlist
     chat_id = update.chat_id
     client = player.client
+    print(pytgcalls)
     if len(playlist[chat_id]) > 1:
         playlist[chat_id].pop(0)
         query = playlist[chat_id][0]['query']
@@ -191,5 +192,6 @@ async def stream_ended(pytgcalls: PyTgCalls, update: Update):
         )
         await asyncio.sleep(3)
         return
+    del playlist[chat_id]
     await client[chat_id].leave_group_call(chat_id)
     await asyncio.sleep(5)
