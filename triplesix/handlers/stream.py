@@ -46,7 +46,7 @@ async def start_stream(_, message: Message):
     if query:
         await player.start_stream("yt", message, query)
     elif reply:
-        if reply in ("video", "document"):
+        if reply.video or reply.document:
             await player.start_stream("local", message)
         else:
             await message.reply("Reply to video or document.")
