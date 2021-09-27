@@ -56,7 +56,6 @@ async def close_inline(_, cb: CallbackQuery):
     person = await message.chat.get_member(message.from_user.id)
     if person.status in ("creator", "administrator"):
         await message.delete()
-        return
     await message.delete()
 
 
@@ -71,6 +70,7 @@ async def play_callback(_, cb: CallbackQuery):
         return
     res = YoutubeSearch(query, 10).to_dict()
     title = res[x]["title"]
+    await cb.message.delete()
     await player.start_stream_via_callback(title, cb)
 
 

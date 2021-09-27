@@ -17,6 +17,7 @@
 
 import asyncio
 import random
+from typing import Optional
 
 from pyrogram import Client
 from pyrogram.errors import FloodWait
@@ -49,25 +50,37 @@ class Player:
         self.client = {}
         self.playlist: dict[int, list[dict[str, str]]] = {}
 
-    async def _stream(self, query: str, message: Message, url: str, y):
+    async def _stream(self, mode: str, message: Message, source: str, y, query: Optional[str] = ""):
         chat_id = message.chat.id
         playlist = self.playlist
-        playlist[chat_id] = [{"query": query}]
         call = self.call
-        await y.edit(get_message(chat_id, "stream").format(query))
-        await call.join_group_call(
-            chat_id,
-            AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo()),
-            stream_type=StreamType().pulse_stream,
-        )
-        self.client[chat_id] = call
+        if mode == "yt":
+            playlist[chat_id] = [{"query": query, "mode": mode}]
+            await y.edit(get_message(chat_id, "stream").format(query))
+            await call.join_group_call(
+                chat_id,
+                AudioVideoPiped(source, MediumQualityAudio(), MediumQualityVideo()),
+                stream_type=StreamType().pulse_stream,
+            )
+            self.client[chat_id] = call
+            return
+        if mode == "local":
+            playlist[chat_id] = [{"query": query, "mode": mode}]
+            await y.edit(get_message(chat_id, "localstream"))
+            await call.join_group_call(
+                chat_id,
+                AudioVideoPiped(source),
+                stream_type=StreamType().pulse_stream
+            )
+            self.client[chat_id] = call
+            return
 
-    async def _start_stream(self, query, message: Message):
+    async def _start_stream_via_yt(self, query, message: Message):
         chat_id = message.chat.id
         playlist = self.playlist
         if len(playlist) >= 1:
             try:
-                playlist[chat_id].extend([{"query": query}])
+                playlist[chat_id].extend([{"query": query, "mode": "yt"}])
                 y = await message.reply("Queued")
                 await asyncio.sleep(10)
                 await y.delete()
@@ -81,11 +94,11 @@ class Player:
         y = await message.reply(get_message(chat_id, "process"))
         url = await get_youtube_stream(query)
         try:
-            await self._stream(query, message, url, y)
+            await self._stream("yt", message, url, y, query)
         except FloodWait as fw:
             await message.reply(f"Getting floodwait {fw.x} second, bot sleeping")
             await asyncio.sleep(fw.x)
-            await self._stream(query, message, url, y)
+            await self._stream("yt", message, url, y, query)
         except NoActiveGroupCall:
             try:
                 await user.send(
@@ -94,7 +107,7 @@ class Player:
                         random_id=random.randint(10000, 999999999),
                     )
                 )
-                await self._stream(query, message, url, y)
+                await self._stream("yt", message, url, y, query)
             except Exception as ex:
                 await y.edit(
                     f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}"
@@ -104,12 +117,57 @@ class Player:
             await y.edit(f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}")
             del playlist[chat_id]
 
-    async def start_stream(self, query: str, message: Message):
-        await self._start_stream(query, message)
+    async def _start_stream_via_local(self, message: Message):
+        chat_id = message.chat.id
+        playlist = self.playlist
+        query = await message.reply_to_message.download()
+        if len(playlist[chat_id]) >= 1:
+            try:
+                playlist[chat_id].extend([{"query": query, "mode": "local"}])
+                y = await message.reply("queued")
+                await asyncio.sleep(10)
+                await y.delete()
+                return
+            except KeyError as e:
+                await message.reply(
+                    f"Error: {e} \n please tell the owner about this"
+                )
+                del playlist[chat_id]
+                return
+        y = await message.reply(get_message(chat_id, "process"))
+        try:
+            await self._stream("local", message, query, y)
+        except FloodWait as fw:
+            await message.reply(f"Getting floodwait {fw.x} second, bot sleeping")
+            await asyncio.sleep(fw.x)
+            await self._stream("local", message, query, y)
+        except NoActiveGroupCall:
+            try:
+                await user.send(
+                    CreateGroupCall(
+                        peer=await user.resolve_peer(chat_id),
+                        random_id=random.randint(10000, 999999999),
+                    )
+                )
+                await self._stream("local", message, query, y)
+            except Exception as ex:
+                await y.edit(
+                    f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}"
+                )
+                del playlist[chat_id]
+        except Exception as ex:
+            await y.edit(f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}")
+            del playlist[chat_id]
+
+    async def start_stream(self, mode: str, message: Message, query: Optional[str] = ""):
+        if mode == "yt":
+            await self._start_stream_via_yt(query, message)
+        if mode == "local":
+            await self._start_stream_via_local(message)
 
     async def start_stream_via_callback(self, query: str, callback: CallbackQuery):
         message = callback.message
-        await self._start_stream(query, message)
+        await self._start_stream_via_yt(query, message)
 
     async def change_stream(self, message: Message):
         playlist = self.playlist
@@ -184,15 +242,25 @@ async def stream_ended(pytgcalls: PyTgCalls, update: Update):
     print(pytgcalls)
     if len(playlist[chat_id]) > 1:
         playlist[chat_id].pop(0)
-        query = playlist[chat_id][0]["query"]
-        url = await get_youtube_stream(query)
-        await asyncio.sleep(3)
-        await client[chat_id].change_stream(
-            chat_id,
-            AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo()),
-            stream_type=StreamType().pulse_stream,
-        )
-        await asyncio.sleep(3)
+        if playlist[chat_id][0]["mode"] == "yt":
+            query = playlist[chat_id][0]["query"]
+            url = await get_youtube_stream(query)
+            await asyncio.sleep(3)
+            await client[chat_id].change_stream(
+                chat_id,
+                AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo()),
+            )
+            await asyncio.sleep(3)
+            return
+        if playlist[chat_id][0]["mode"] == "local":
+            source = playlist[chat_id][0]["query"]
+            await asyncio.sleep(3)
+            await client[chat_id].change_stream(
+                chat_id,
+                AudioVideoPiped(source)
+            )
+            await asyncio.sleep(3)
+            return
         return
     del playlist[chat_id]
     await client[chat_id].leave_group_call(chat_id)
