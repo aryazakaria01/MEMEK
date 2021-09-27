@@ -78,19 +78,22 @@ class Player:
     async def _start_stream_via_yt(self, query, message: Message):
         chat_id = message.chat.id
         playlist = self.playlist
-        if len(playlist) >= 1:
-            try:
-                playlist[chat_id].extend([{"query": query, "mode": "yt"}])
-                y = await message.reply("Queued")
-                await asyncio.sleep(10)
-                await y.delete()
-                return
-            except KeyError as e:
-                await message.reply(
-                    f"{type(e).__name__}: {e}\nplease tell owner about this."
-                )
-                del playlist[chat_id]
-                return
+        try:
+            if len(playlist[chat_id]) >= 1:
+                try:
+                    playlist[chat_id].extend([{"query": query, "mode": "yt"}])
+                    y = await message.reply("Queued")
+                    await asyncio.sleep(10)
+                    await y.delete()
+                    return
+                except KeyError as e:
+                    await message.reply(
+                        f"{type(e).__name__}: {e}\nplease tell owner about this."
+                    )
+                    del playlist[chat_id]
+                    return
+        except KeyError:
+            pass
         y = await message.reply(get_message(chat_id, "process"))
         url = await get_youtube_stream(query)
         try:
@@ -121,19 +124,22 @@ class Player:
         chat_id = message.chat.id
         playlist = self.playlist
         query = await message.reply_to_message.download()
-        if len(playlist[chat_id]) >= 1:
-            try:
-                playlist[chat_id].extend([{"query": query, "mode": "local"}])
-                y = await message.reply("queued")
-                await asyncio.sleep(10)
-                await y.delete()
-                return
-            except KeyError as e:
-                await message.reply(
-                    f"Error: {e} \n please tell the owner about this"
-                )
-                del playlist[chat_id]
-                return
+        try:
+            if len(playlist[chat_id]) >= 1:
+                try:
+                    playlist[chat_id].extend([{"query": query, "mode": "local"}])
+                    y = await message.reply("queued")
+                    await asyncio.sleep(10)
+                    await y.delete()
+                    return
+                except KeyError as e:
+                    await message.reply(
+                        f"Error: {e} \n please tell the owner about this"
+                    )
+                    del playlist[chat_id]
+                    return
+        except KeyError:
+            pass
         y = await message.reply(get_message(chat_id, "process"))
         try:
             await self._stream("local", message, query, y)
