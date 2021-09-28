@@ -30,7 +30,10 @@ async def change_lang(_, message: Message):
     if len(lang) > 2:
         await message.reply("Use the international format (2 characters)")
         return
-    if len(lang) == 0:
+    if lang not in kode:
+        await message.reply("Invalid language code")
+        return
+    if not lang:
         x = "\n- ".join(kode)
         await message.reply(
             f"here some lang that supported with this bot, to change lang, use /lang (langcode) \n\n- {x}"
