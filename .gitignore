@@ -9,3 +9,4 @@ venv/
 local.env
 .idea
 *.jpg
+backup.py
