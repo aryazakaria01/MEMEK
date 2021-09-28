@@ -43,6 +43,6 @@ async def change_lang(_, message: Message):
     if len(lang) == 2:
         if lang in kode:
             set_lang(message.chat.id, lang)
-            await message.reply(get_message(lang, "lang_changed"))
+            await message.reply(get_message(message.chat.id, "lang_changed"))
         else:
             await message.reply("this lang is not supported")
