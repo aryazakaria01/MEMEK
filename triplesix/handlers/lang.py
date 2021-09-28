@@ -26,8 +26,8 @@ from triplesix.functions import command, authorized_users_only
 @Client.on_message(command("lang"))
 @authorized_users_only
 async def change_lang(_, message: Message):
-    lang = "".join(message.command[1])
-    if len(lang) > 2:
+    lang = "".join(message.command[1] if message.command[1] else "")
+    if len(lang) > 2 and len(lang) == 1:
         await message.reply("Use the international format (2 characters)")
         return
     if lang not in kode:
