@@ -2,5 +2,5 @@
   "stream": "Memutar video {} di grup ini",
   "end": "Bot sukses keluar dari obrolan suara",
   "process": "sedang memproses, mohon tunggu.",
-  "changed": "Bahasa berhasil diganti ke {}"
+  "lang_changed": "Bahasa berhasil diganti ke {}"
 }

@@ -34,15 +34,15 @@ async def change_lang(_, message: Message):
     if len(lang) > 2 or len(lang) == 1:
         await message.reply("Use the international format (2 characters)")
         return
-    if lang not in kode:
-        await message.reply("Invalid language code")
-        return
     if not lang:
         x = "\n- ".join(kode)
         await message.reply(
             f"here some lang that supported with this bot, to change lang, use /lang (langcode) \n\n- {x}"
         )
         return
-    chat_id = message.chat.id
-    set_lang(chat_id, lang)
-    await message.reply(get_message(chat_id, "changed").format(lang))
+    if len(lang) == 2:
+        if lang in kode:
+            set_lang(message.chat.id, lang)
+            await message.reply(get_message(lang, "lang_changed"))
+        else:
+            await message.reply("this lang is not supported")
