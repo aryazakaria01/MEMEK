@@ -9,7 +9,7 @@ from triplesix.functions import command, authorized_users_only, admins_only
 @authorized_users_only
 async def invite_userbot(_, message: Message):
     chat_id = message.chat.id
-    invite_link = await bot.create_chat_invite_link(chat_id, member_limit=1)
+    invite_link = (await bot.create_chat_invite_link(chat_id, member_limit=1)).invite_link
     await user.join_chat(invite_link)
     await user.send_message(chat_id, "hello, what can I do for you?")
 
