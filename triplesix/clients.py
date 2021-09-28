@@ -52,32 +52,32 @@ class Player:
     async def _set_stream(self, mode: str, message: Message, source: str, y, query: Optional[str] = ""):
         playlist = self.playlist
         chat_id = message.chat.id
-        if mode == "yt":
+        try:
+            await self._stream(mode, message, source, y, query)
+        except FloodWait as fw:
+            await message.reply(f"Getting floodwait {fw.x} second, bot sleeping")
+            await asyncio.sleep(fw.x)
+            await self._stream(mode, message, source, y, query)
+        except NoActiveGroupCall:
             try:
-                await self._stream(mode, message, source, y, query)
-            except FloodWait as fw:
-                await message.reply(f"Getting floodwait {fw.x} second, bot sleeping")
-                await asyncio.sleep(fw.x)
-                await self._stream(mode, message, source, y, query)
-            except NoActiveGroupCall:
-                try:
-                    await user.send(
-                        CreateGroupCall(
-                            peer=await user.resolve_peer(chat_id),
-                            random_id=random.randint(10000, 999999999),
-                        )
+                await user.send(
+                    CreateGroupCall(
+                        peer=await user.resolve_peer(chat_id),
+                        random_id=random.randint(10000, 999999999),
                     )
-                    await self._stream(mode, message, source, y, query)
-                except Exception as ex:
-                    await y.edit(
-                        f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}"
-                    )
-                    del playlist[chat_id]
+                )
+                await self._stream(mode, message, source, y, query)
             except Exception as ex:
-                await y.edit(f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}")
+                await y.edit(
+                    f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}"
+                )
                 del playlist[chat_id]
+        except Exception as ex:
+            await y.edit(f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}")
+            del playlist[chat_id]
 
-    async def _stream(self, mode: str, message: Message, source: str, y, query: Optional[str] = ""):
+
+    async def _stream(self, mode: str, message: Message, source: str, y: Message, query: Optional[str] = ""):
         chat_id = message.chat.id
         playlist = self.playlist
         call = self.call
@@ -89,8 +89,7 @@ class Player:
                 AudioVideoPiped(source, MediumQualityAudio(), MediumQualityVideo()),
                 stream_type=StreamType().pulse_stream,
             )
-            return
-        if mode == "local":
+        elif mode == "local":
             playlist[chat_id] = [{"query": query, "mode": mode}]
             await y.edit(get_message(chat_id, "localstream"))
             await call.join_group_call(
@@ -98,7 +97,6 @@ class Player:
                 AudioVideoPiped(source),
                 stream_type=StreamType().pulse_stream
             )
-            return
 
     async def _start_stream_via_yt(self, query, message: Message):
         chat_id = message.chat.id
@@ -156,24 +154,28 @@ class Player:
         message = callback.message
         await self._start_stream_via_yt(query, message)
 
-    async def stream_change(self, chat_id: int):
+    async def stream_change(self, mode: str, chat_id: int, query: str):
         call = self.call
-        playlist = self.playlist
-        query = playlist[chat_id][0]["query"]
-        url = await get_youtube_stream(query)
-        await asyncio.sleep(3)
-        await call.change_stream(
-            chat_id,
-            AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo()),
-        )
+        if mode == "yt":
+            url = await get_youtube_stream(query)
+            await call.change_stream(
+                chat_id,
+                AudioVideoPiped(url, MediumQualityAudio(), MediumQualityVideo()),
+            )
+        elif mode == "local":
+            await call.change_stream(
+                chat_id,
+                AudioVideoPiped(query)
+            )
 
     async def change_stream(self, message: Message):
         playlist = self.playlist
         chat_id = message.chat.id
         query = playlist[chat_id][0]["query"]
+        mode = playlist[chat_id][0]["mode"]
         if len(playlist[chat_id]) > 1:
             playlist[chat_id].pop(0)
-            await self.stream_change(chat_id)
+            await self.stream_change(mode, chat_id, query)
             await asyncio.sleep(3)
             await message.reply(f"Skipped track, and playing {query}")
             return
@@ -231,22 +233,11 @@ async def stream_ended(pytgcalls: PyTgCalls, update: Update):
     playlist = player.playlist
     chat_id = update.chat_id
     call = player.call
-    print(pytgcalls)
     if len(playlist[chat_id]) > 1:
         playlist[chat_id].pop(0)
-        if playlist[chat_id][0]["mode"] == "yt":
-            await player.stream_change(chat_id)
-            await asyncio.sleep(3)
-            return
-        if playlist[chat_id][0]["mode"] == "local":
-            source = playlist[chat_id][0]["query"]
-            await asyncio.sleep(3)
-            await call.change_stream(
-                chat_id,
-                AudioVideoPiped(source)
-            )
-            await asyncio.sleep(3)
-            return
+        query = playlist[chat_id][0]["query"]
+        mode = playlist[chat_id][0]["mode"]
+        await player.stream_change(mode, chat_id, query)
         return
     del playlist[chat_id]
     await call.leave_group_call(chat_id)
