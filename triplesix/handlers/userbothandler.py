@@ -1,17 +1,17 @@
 from pyrogram import Client
 from pyrogram.types import Message
 from pyrogram.errors import UserNotParticipant
-from triplesix.clients import bot, user
+from triplesix.clients import user
 from triplesix.functions import command, authorized_users_only, admins_only
 
 
 @Client.on_message(command("joinchat"))
 @authorized_users_only
-async def invite_userbot(_, message: Message):
+async def invite_userbot(client: Client, message: Message):
     chat_id = message.chat.id
-    invite_link = (await bot.create_chat_invite_link(chat_id, member_limit=1)).invite_link
+    invite_link = await client.export_chat_invite_link(chat_id)
     await user.join_chat(invite_link)
-    await user.send_message(chat_id, "hello, what can I do for you?")
+    await user.send_message(chat_id, "hi, what can I do for you?")
 
 
 @Client.on_message(command("leavechat"))
