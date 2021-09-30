@@ -17,22 +17,21 @@
 
 from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery
-from youtube_search import YoutubeSearch
 
+from dB import set_lang, get_message
 from triplesix.clients import player
 from triplesix.functions import rem
 from triplesix.handlers.stream import InlineKeyboardButton, InlineKeyboardMarkup
-from dB import lang_flags, set_lang, get_message
 
 
 def inline_keyboard(query: str, user_id: int):
-    i = 5
-    j = 4
+    i = 0
+    j = -1
     for _ in range(5):
         i += 1
         j += 1
         yield InlineKeyboardButton(
-            f"{i}", callback_data=f"stream {j}|{query}|{user_id}"
+            f"{i}", callback_data=f"nextstream {j}|{query}|{user_id}"
         )
 
 
@@ -60,6 +59,19 @@ async def play_callback(_, cb: CallbackQuery):
         await cb.answer("this is not for u.", show_alert=True)
         return
     title = rem[0][x]["title"]
+    await cb.message.delete()
+    await player.start_stream_via_callback(title, cb)
+
+
+@Client.on_callback_query(filters.regex(pattern=r"nextstream"))
+async def play_callback(_, cb: CallbackQuery):
+    callback = cb.data.split("|")
+    x = int(callback[0].split(" ")[1])
+    user_id = int(callback[2])
+    if cb.from_user.id != user_id:
+        await cb.answer("this is not for u.", show_alert=True)
+        return
+    title = rem[1][x]["title"]
     await cb.message.delete()
     await player.start_stream_via_callback(title, cb)
 

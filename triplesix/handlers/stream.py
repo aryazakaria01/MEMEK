@@ -25,9 +25,11 @@ from youtube_search import YoutubeSearch
 
 def inline_keyboard(query: str, user_id: int):
     i = 0
+    k = 0
     for j in range(5):
         i += 1
-        yield InlineKeyboardButton(f"{i}", callback_data=f"stream {j}|{query}|{user_id}")
+        yield InlineKeyboardButton(f"{i}", callback_data=f"stream {k}|{query}|{user_id}")
+        k += 1
 
 
 @Client.on_message(command("stream"))
