@@ -89,7 +89,7 @@ def video_downloader(query: str):
     return dur, filename, title
 
 
-a: list[dict[str, Any]] = []
+a = []
 
 rem = []
 
