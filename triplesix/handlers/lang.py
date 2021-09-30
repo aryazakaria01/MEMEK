@@ -16,17 +16,16 @@
 
 
 from pyrogram import Client
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 from dB.getlang import get_message, kode
-from dB.lang_db import set_lang
+from dB.lang_db import set_lang, lang_flags
 from triplesix.functions import command, authorized_users_only
 
 
 @Client.on_message(command("lang"))
 @authorized_users_only
 async def change_lang(_, message: Message):
-    lang = ""
     try:
         lang = message.command[1]
     except IndexError:
@@ -35,14 +34,25 @@ async def change_lang(_, message: Message):
         await message.reply("Use the international format (2 characters)")
         return
     if not lang:
-        x = "\n- ".join(kode)
+        temp = []
+        keyboard = []
+
+        for i, j in enumerate(kode, start=1):
+            temp.append(InlineKeyboardButton(f"{lang_flags[j]}", callback_data=f"set_lang_{j}"))
+            if i % 2 == 0:
+                keyboard.append(temp)
+                temp = []
+            if i == len(kode):
+                keyboard.append(temp)
         await message.reply(
-            f"here some lang that supported with this bot, to change lang, use /lang (langcode) \n\n- {x}"
+            "this is all language that supported with this bot",
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
-        return
     if len(lang) == 2:
         if lang in kode:
             set_lang(message.chat.id, lang)
             await message.reply(get_message(message.chat.id, "lang_changed").format(lang))
         else:
             await message.reply("this lang is not supported")
+
+

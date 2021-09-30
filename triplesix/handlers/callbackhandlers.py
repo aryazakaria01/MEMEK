@@ -21,6 +21,7 @@ from youtube_search import YoutubeSearch
 
 from triplesix.clients import player
 from triplesix.handlers.stream import InlineKeyboardButton, InlineKeyboardMarkup
+from dB import lang_flags, set_lang, get_message
 
 
 def inline_keyboard(query: str, user_id: int):
@@ -103,3 +104,15 @@ async def next_callback(_, cb: CallbackQuery):
         ),
         disable_web_page_preview=True,
     )
+
+
+@Client.on_callback_query(filters.regex(pattern=r"set_lang_(.*)"))
+async def change_language(_, cb: CallbackQuery):
+    langs = cb.matches[0].group(1)
+    chat = cb.message.chat
+    lang = lang_flags[langs]
+    try:
+        set_lang(chat.id, lang)
+        await cb.message.edit(get_message(chat.id, "lang_changed"))
+    except Exception as e:
+        await cb.message.edit(f"an error occured\n\n{e}")

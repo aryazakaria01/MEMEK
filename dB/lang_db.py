@@ -16,17 +16,26 @@
 
 
 import sqlite3
+from pyrogram import emoji
 
 conn = sqlite3.connect("chat.db")
 cur = conn.cursor()
 
-try:
-    cur.execute(
-        """CREATE TABLE chat_ids
-               (chat text, lang text)"""
-    )
-except sqlite3.OperationalError:
-    pass
+cur.execute(
+    """CREATE TABLE IF NOT EXISTS chat_ids
+           (chat text, lang text)"""
+)
+
+lang_flags = {
+    "en": f"{emoji.FLAG_UNITED_STATES} English",
+    "id": f"{emoji.FLAG_INDONESIA} Indonesia",
+    "hi": f"{emoji.FLAG_INDIA} India",
+    "gj": f"{emoji.FLAG_INDIA} Gujarat",
+    "jp": f"{emoji.FLAG_JAPAN} Japan",
+    "si": f"{emoji.FLAG_SRI_LANKA} Sinhala",
+    "ta": f"{emoji.FLAG_SRI_LANKA} Tamil"
+}
+
 
 
 def add_chat(chat_id: int, lang="en"):
