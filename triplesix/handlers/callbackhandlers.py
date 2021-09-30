@@ -51,9 +51,7 @@ async def close_inline(_, cb: CallbackQuery):
     callback = cb.data.split("|")
     user_id = int(callback[1])
     message = cb.message
-    del rem[0]
-    del rem[1]
-    print(rem)
+    rem.clear()
     person = await message.chat.get_member(cb.from_user.id)
     if cb.from_user.id != user_id:
         await cb.answer("this is not for you.", show_alert=True)
@@ -76,14 +74,12 @@ async def play_callback(_, cb: CallbackQuery):
         title = rem[0][x]["title"]
         await cb.message.delete()
         await player.start_stream_via_callback(title, cb)
-        del rem[0]
-        del rem[1]
+        rem.clear()
     elif match == "next":
         title = rem[1][x]["title"]
         await cb.message.delete()
         await player.start_stream_via_callback(title, cb)
-        del rem[0]
-        del rem[1]
+        rem.clear()
 
 
 @Client.on_callback_query(filters.regex(pattern=r"back"))
