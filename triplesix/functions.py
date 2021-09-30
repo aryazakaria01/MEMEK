@@ -91,7 +91,7 @@ def video_downloader(query: str):
 
 a = []
 
-rem = {}
+rem = []
 
 
 def yt_searcher(query: str):

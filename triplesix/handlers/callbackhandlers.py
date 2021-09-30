@@ -58,7 +58,7 @@ async def close_inline(_, cb: CallbackQuery):
     if person.status in ("creator", "administrator"):
         return await message.delete()
     await message.delete()
-    del rem[cb.message.chat.id]
+    del rem
 
 
 @Client.on_callback_query(filters.regex(pattern=r"(.*)stream"))
@@ -67,20 +67,19 @@ async def play_callback(_, cb: CallbackQuery):
     callback = cb.data.split("|")
     x = int(callback[0].split(" ")[1])
     user_id = int(callback[1])
-    ren = rem[cb.message.chat.id]
     if not match:
         if cb.from_user.id != user_id:
             await cb.answer("this is not for u.", show_alert=True)
             return
-        title = ren[0][x]["title"]
+        title = rem[0][x]["title"]
         await cb.message.delete()
         await player.start_stream_via_callback(title, cb)
-        del ren
+        del rem
     elif match == "next":
-        title = ren[1][x]["title"]
+        title = rem[1][x]["title"]
         await cb.message.delete()
         await player.start_stream_via_callback(title, cb)
-        del ren
+        del rem
 
 
 @Client.on_callback_query(filters.regex(pattern=r"back"))
@@ -88,14 +87,12 @@ async def back_callback(_, cb: CallbackQuery):
     message = cb.message
     callback = cb.data.split("|")
     user_id = int(callback[1])
-    chat_id = message.chat.id
     if cb.from_user.id != user_id:
         await cb.answer("this is not for u.", show_alert=True)
         return
     temp = []
     keyboard = []
     # enumerate for keyboard
-    ren = rem[chat_id]
     for count, j in enumerate(list(inline_keyboard2(user_id)), start=1):
         temp.append(j)
         if count % 3 == 0:
@@ -105,7 +102,7 @@ async def back_callback(_, cb: CallbackQuery):
             keyboard.append(temp)
     rez = "\n"
     k = 0
-    for i in ren[0]:
+    for i in rem[0]:
         k += 1
         rez += f"|- {k}. [{i['title'][:35]}]({i['url']})\n"
         rez += f"|- Duration - {i['duration']}\n\n"
@@ -128,14 +125,12 @@ async def next_callback(_, cb: CallbackQuery):
     message = cb.message
     callback = cb.data.split("|")
     user_id = int(callback[1])
-    chat_id = message.chat.id
-    ren = rem[chat_id]
     if cb.from_user.id != user_id:
         await cb.answer("this is not for u.", show_alert=True)
         return
     rez = "\n"
     k = 5
-    for i in ren[1]:
+    for i in rem[1]:
         k += 1
         rez += f"|- {k}. [{i['title']}]({i['url']})\n"
         rez += f"|- Duration - {i['duration']}\n\n"
