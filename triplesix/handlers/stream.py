@@ -85,7 +85,7 @@ async def stream_v2(_, message: Message):
               InlineKeyboardButton(f"Next {emoji.RIGHT_ARROW}", f"next|{user_id}")
             ],
             [
-                InlineKeyboardButton("Close", f"close|{user_id}")
+                InlineKeyboardButton(f"Close {emoji.WASTEBASKET}", f"close|{user_id}")
             ]
         ]
     ), disable_web_page_preview=True)
