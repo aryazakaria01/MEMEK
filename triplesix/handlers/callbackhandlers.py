@@ -112,6 +112,6 @@ async def change_language(_, cb: CallbackQuery):
     chat = cb.message.chat
     try:
         set_lang(chat.id, lang)
-        await cb.message.edit(get_message(chat.id, "lang_changed"))
+        await cb.message.edit(get_message(chat.id, "lang_changed").format(lang))
     except Exception as e:
         await cb.message.edit(f"an error occured\n\n{e}")
