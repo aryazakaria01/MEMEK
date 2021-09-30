@@ -74,7 +74,7 @@ async def next_callback(_, cb: CallbackQuery):
         await cb.answer("this is not for u.", show_alert=True)
         return
     rez = "\n"
-    k = 0
+    k = 5
     for i in rem[1]:
         k += 1
         rez += f"|- {k}. [{i['title']}]({i['url']})\n"
