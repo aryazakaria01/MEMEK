@@ -58,7 +58,8 @@ async def close_inline(_, cb: CallbackQuery):
     if person.status in ("creator", "administrator"):
         return await message.delete()
     await message.delete()
-    del rem
+    del rem[0]
+    del rem[1]
 
 
 @Client.on_callback_query(filters.regex(pattern=r"(.*)stream"))
@@ -74,12 +75,14 @@ async def play_callback(_, cb: CallbackQuery):
         title = rem[0][x]["title"]
         await cb.message.delete()
         await player.start_stream_via_callback(title, cb)
-        del rem
+        del rem[0]
+        del rem[1]
     elif match == "next":
         title = rem[1][x]["title"]
         await cb.message.delete()
         await player.start_stream_via_callback(title, cb)
-        del rem
+        del rem[0]
+        del rem[1]
 
 
 @Client.on_callback_query(filters.regex(pattern=r"back"))
