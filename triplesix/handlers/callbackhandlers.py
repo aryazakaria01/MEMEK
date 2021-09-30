@@ -20,6 +20,7 @@ from pyrogram.types import CallbackQuery
 from youtube_search import YoutubeSearch
 
 from triplesix.clients import player
+from triplesix.functions import rem
 from triplesix.handlers.stream import InlineKeyboardButton, InlineKeyboardMarkup
 from dB import lang_flags, set_lang, get_message
 
@@ -27,18 +28,7 @@ from dB import lang_flags, set_lang, get_message
 def inline_keyboard(query: str, user_id: int):
     i = 5
     j = 4
-    for _ in range(3):
-        i += 1
-        j += 1
-        yield InlineKeyboardButton(
-            f"{i}", callback_data=f"stream {j}|{query}|{user_id}"
-        )
-
-
-def inline_keyboard2(query: str, user_id: int):
-    i = 8
-    j = 7
-    for _ in range(2):
+    for _ in range(5):
         i += 1
         j += 1
         yield InlineKeyboardButton(
@@ -69,8 +59,7 @@ async def play_callback(_, cb: CallbackQuery):
     if cb.from_user.id != user_id:
         await cb.answer("this is not for u.", show_alert=True)
         return
-    res = YoutubeSearch(query, 10).to_dict()
-    title = res[x]["title"]
+    title = rem[0][x]["title"]
     await cb.message.delete()
     await player.start_stream_via_callback(title, cb)
 
@@ -85,20 +74,27 @@ async def next_callback(_, cb: CallbackQuery):
         await cb.answer("this is not for u.", show_alert=True)
         return
     rez = "\n"
-    i = 5
-    j = 4
-    for _ in range(5):
-        i += 1
-        j += 1
-        res = YoutubeSearch(query, 10).to_dict()
-        rez += f"|- {i}. [{res[j]['title'][:35]}...](https://youtube.com{res[j]['url_suffix']})\n"
-        rez += f" - Duration - {res[j]['duration']}\n"
+    k = 0
+    for i in rem[1]:
+        k += 1
+        rez += f"|- {k}. [{i['title']}]({i['url']})\n"
+        rez += f"|- Duration - {i['duration']}\n\n"
+    temp = []
+    keyboard = []
+    x = list(inline_keyboard(query, user_id))
+    for count, j in enumerate(x, start=1):
+        temp.append(j)
+        if count % 3 == 0:
+            keyboard.append(temp)
+            temp = []
+        if count == len(list(inline_keyboard(query, user_id))):
+            keyboard.append(temp)
     await message.edit(
         f"Results\n{rez}\n|- Owner @shohih_abdul2",
         reply_markup=InlineKeyboardMarkup(
             [
-                list(inline_keyboard(query, user_id)),
-                list(inline_keyboard2(query, user_id)),
+                keyboard[0],
+                keyboard[1],
                 [InlineKeyboardButton("Close", f"close|{user_id}")],
             ]
         ),

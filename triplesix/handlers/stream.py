@@ -18,24 +18,15 @@
 from pyrogram import Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
-from triplesix.functions import command
+from triplesix.functions import command, yt_searcher, rem
 from triplesix.clients import player
 from youtube_search import YoutubeSearch
 
 
 def inline_keyboard(query: str, user_id: int):
     i = 0
-    for j in range(3):
+    for j in range(5):
         i += 1
-        yield InlineKeyboardButton(f"{i}", callback_data=f"stream {j}|{query}|{user_id}")
-
-
-def inline_keyboard2(query: str, user_id: int):
-    i = 3
-    j = 2
-    for _ in range(2):
-        i += 1
-        j += 1
         yield InlineKeyboardButton(f"{i}", callback_data=f"stream {j}|{query}|{user_id}")
 
 
@@ -58,21 +49,37 @@ async def start_stream(_, message: Message):
 async def stream_v2(_, message: Message):
     query = " ".join(message.command[1:])
     user_id = message.from_user.id
+    temps = []
+    x = list(yt_searcher(query))
+    # enumerate for yt
+    for i, j in enumerate(x, start=1):
+        temps.append(j)
+        if i % 5 == 0:
+            rem.append(temps)
+            temps = []
+        if i == len(x):
+            rem.append(temps)
     rez = "\n"
-    j = 0
-    try:
-        for i in range(5):
-            j += 1
-            res = YoutubeSearch(query, 5).to_dict()
-            rez += f"|- {j}. [{res[i]['title'][:35]}...](https://youtube.com{res[i]['url_suffix']})\n"
-            rez += f"|- Duration - {res[i]['duration']}\n\n"
-            i += 1
-    except IndexError:
-        await message.reply("can't use this command, try to give the link or title, and use /stream command")
+    k = 0
+    for i in rem[0]:
+        k += 1
+        rez += f"|- {k}. [{i['title'][:35]}]({i['url']})\n"
+        rez += f"|- Duration - {i['duration']}\n\n"
+
+    temp = []
+    keyboard = []
+    # enumerate for keyboard
+    for count, j in enumerate(list(inline_keyboard(query, user_id)), start=1):
+        temp.append(j)
+        if count % 3 == 0:
+            keyboard.append(temp)
+            temp = []
+        if count == len(list(inline_keyboard(query, user_id))):
+            keyboard.append(temp)
     await message.reply(f"Results\n{rez}\n|- Owner @shohih_abdul2", reply_markup=InlineKeyboardMarkup(
         [
-            list(inline_keyboard(query, user_id)),
-            list(inline_keyboard2(query, user_id)),
+            keyboard[0],
+            keyboard[1],
             [
               InlineKeyboardButton("Next", f"next|{query}|{user_id}")
             ],

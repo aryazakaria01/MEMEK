@@ -15,7 +15,7 @@
 #     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from typing import Callable
+from typing import Callable, Any
 
 import asyncio
 import requests
@@ -87,3 +87,27 @@ def video_downloader(query: str):
     vid = pufy.getbestvideo()
     filename = vid.download(quiet=True)
     return dur, filename, title
+
+
+a: list[dict[str, Any]] = []
+
+rem = []
+
+
+def yt_searcher(query: str):
+    i = 0
+    rez = ""
+    j = -1
+    for _ in range(10):
+        i += 1
+        res = YoutubeSearch(query, 10).to_dict()
+        rez += f"|- {i}. [{res[j]['title'][:35]}...](https://youtube.com{res[j]['url_suffix']})\n"
+        rez += f" - Duration - {res[j]['duration']}\n"
+        x = {
+            "title": res[j]["title"],
+            "url": f"https://youtube.com{res[j]['url_suffix']}",
+            "duration": res[j]["duration"]
+        }
+        a.append(x.copy())
+        j += 1
+    return a
