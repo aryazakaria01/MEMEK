@@ -55,17 +55,16 @@ async def stream_v2(_, message: Message):
     x = list(yt_searcher(query))
     # enumerate for yt
     rem[chat_id] = []
-    ren = rem[chat_id]
     for i, j in enumerate(x, start=1):
         temps.append(j)
         if i % 5 == 0:
-            ren.append(temps)
+            rem[chat_id].append(temps)
             temps = []
         if i == len(x):
-            ren.append(temps)
+            rem[chat_id].append(temps)
     rez = "\n"
     k = 0
-    for i in ren[0]:
+    for i in rem[chat_id][0]:
         k += 1
         rez += f"|- {k}. [{i['title'][:35]}]({i['url']})\n"
         rez += f"|- Duration - {i['duration']}\n\n"
