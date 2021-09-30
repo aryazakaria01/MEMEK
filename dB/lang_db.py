@@ -29,9 +29,9 @@ cur.execute(
 lang_flags = {
     "en": f"{emoji.FLAG_UNITED_STATES} English",
     "id": f"{emoji.FLAG_INDONESIA} Indonesia",
+    "jp": f"{emoji.FLAG_JAPAN} Japan",
     "hi": f"{emoji.FLAG_INDIA} India",
     "gj": f"{emoji.FLAG_INDIA} Gujarat",
-    "jp": f"{emoji.FLAG_JAPAN} Japan",
     "si": f"{emoji.FLAG_SRI_LANKA} Sinhala",
     "ta": f"{emoji.FLAG_SRI_LANKA} Tamil"
 }
