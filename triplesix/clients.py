@@ -227,7 +227,7 @@ class Player:
             await message.reply(f"Volume changed to {vol}%")
 
 
-player = Player(PyTgCalls(user, multi_thread=True))
+player = Player(PyTgCalls(user))
 
 
 @player.call.on_stream_end()
