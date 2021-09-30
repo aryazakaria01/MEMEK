@@ -50,10 +50,11 @@ async def start_stream(_, message: Message):
 async def stream_v2(_, message: Message):
     query = " ".join(message.command[1:])
     user_id = message.from_user.id
-    chat_id =  message.chat.id
+    chat_id = message.chat.id
     temps = []
     x = list(yt_searcher(query))
     # enumerate for yt
+    rem[chat_id] = []
     ren = rem[chat_id]
     for i, j in enumerate(x, start=1):
         temps.append(j)
