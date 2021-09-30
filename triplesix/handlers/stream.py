@@ -15,20 +15,19 @@
 #     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from pyrogram import Client
+from pyrogram import Client, emoji, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 from triplesix.functions import command, yt_searcher, rem
 from triplesix.clients import player
-from youtube_search import YoutubeSearch
 
 
-def inline_keyboard(query: str, user_id: int):
+def inline_keyboard(user_id: int):
     i = 0
     k = 0
     for j in range(5):
         i += 1
-        yield InlineKeyboardButton(f"{i}", callback_data=f"stream {k}|{query}|{user_id}")
+        yield InlineKeyboardButton(f"{i}", callback_data=f"stream {k}|{user_id}")
         k += 1
 
 
@@ -71,19 +70,19 @@ async def stream_v2(_, message: Message):
     temp = []
     keyboard = []
     # enumerate for keyboard
-    for count, j in enumerate(list(inline_keyboard(query, user_id)), start=1):
+    for count, j in enumerate(list(inline_keyboard(user_id)), start=1):
         temp.append(j)
         if count % 3 == 0:
             keyboard.append(temp)
             temp = []
-        if count == len(list(inline_keyboard(query, user_id))):
+        if count == len(list(inline_keyboard(user_id))):
             keyboard.append(temp)
     await message.reply(f"Results\n{rez}\n|- Owner @shohih_abdul2", reply_markup=InlineKeyboardMarkup(
         [
             keyboard[0],
             keyboard[1],
             [
-              InlineKeyboardButton("Next", f"next|{query}|{user_id}")
+              InlineKeyboardButton(f"Next {emoji.RIGHT_ARROW}", f"next|{user_id}")
             ],
             [
                 InlineKeyboardButton("Close", f"close|{user_id}")
