@@ -189,13 +189,12 @@ class Player:
         playlist = self.playlist
         call = self.call
         try:
-            try:
-                if call.get_call(chat_id):
-                    await call.leave_group_call(chat_id)
-                    del playlist[chat_id]
-                    await message.reply("ended")
-            except KeyError:
-                await message.reply("you never streaming anything")
+            if call.get_call(chat_id):
+                await call.leave_group_call(chat_id)
+                del playlist[chat_id]
+                await message.reply("ended")
+                return
+            await message.reply("you never stream anything")
         except GroupCallNotFound:
             await message.reply("not streaming")
 
@@ -228,7 +227,7 @@ class Player:
             await message.reply(f"Volume changed to {vol}%")
 
 
-player = Player(PyTgCalls(user))
+player = Player(PyTgCalls(user, multi_thread=True))
 
 
 @player.call.on_stream_end()

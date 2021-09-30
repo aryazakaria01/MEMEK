@@ -10,9 +10,19 @@ from triplesix.functions import command, authorized_users_only, admins_only
 async def invite_userbot(client: Client, message: Message):
     chat_id = message.chat.id
     invite_link = await client.export_chat_invite_link(chat_id)
+    user_id = (await user.get_me()).id
     try:
         await user.join_chat(invite_link)
         await user.send_message(chat_id, "hi, what can I do for you?")
+        await client.promote_chat_member(
+            chat_id,
+            user_id,
+            can_change_info=True,
+            can_invite_users=True,
+            can_pin_messages=True,
+            can_delete_messages=True,
+            can_manage_voice_chats=True,
+        )
     except UserAlreadyParticipant:
         await user.send_message(chat_id, "hello? can I help you?", reply_to_message_id=message.message_id)
 
