@@ -76,7 +76,6 @@ class Player:
             await y.edit(f"{type(ex).__name__}: {ex.with_traceback(ex.__traceback__)}")
             del playlist[chat_id]
 
-
     async def _stream(self, mode: str, message: Message, source: str, y: Message, query: Optional[str] = ""):
         chat_id = message.chat.id
         playlist = self.playlist
@@ -173,13 +172,17 @@ class Player:
         chat_id = message.chat.id
         query = playlist[chat_id][0]["query"]
         mode = playlist[chat_id][0]["mode"]
-        if len(playlist[chat_id]) > 1:
-            playlist[chat_id].pop(0)
-            await self.stream_change(mode, chat_id, query)
-            await asyncio.sleep(3)
-            await message.reply(f"Skipped track, and playing {query}")
+        try:
+            if len(playlist[chat_id]) > 1:
+                playlist[chat_id].pop(0)
+                await self.stream_change(mode, chat_id, query)
+                await asyncio.sleep(3)
+                await message.reply(f"Skipped track, and playing {query}")
+                return
+            await message.reply("No playlist")
             return
-        await message.reply("No playlist")
+        except KeyError:
+            await message.reply("No playlist")
 
     async def end_stream(self, message: Message):
         chat_id = message.chat.id

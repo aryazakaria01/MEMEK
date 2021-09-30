@@ -60,12 +60,15 @@ async def stream_v2(_, message: Message):
     user_id = message.from_user.id
     rez = "\n"
     j = 0
-    for i in range(5):
-        j += 1
-        res = YoutubeSearch(query, 5).to_dict()
-        rez += f"|- {j}. [{res[i]['title'][:35]}...](https://youtube.com{res[i]['url_suffix']})\n"
-        rez += f"|- Duration - {res[i]['duration']}\n\n"
-        i += 1
+    try:
+        for i in range(5):
+            j += 1
+            res = YoutubeSearch(query, 5).to_dict()
+            rez += f"|- {j}. [{res[i]['title'][:35]}...](https://youtube.com{res[i]['url_suffix']})\n"
+            rez += f"|- Duration - {res[i]['duration']}\n\n"
+            i += 1
+    except IndexError:
+        await message.reply("can't use this command, try to give the link or title, and use /stream command")
     await message.reply(f"Results\n{rez}\n|- Owner @shohih_abdul2", reply_markup=InlineKeyboardMarkup(
         [
             list(inline_keyboard(query, user_id)),
