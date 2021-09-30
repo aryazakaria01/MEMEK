@@ -62,6 +62,7 @@ async def stream_v2(_, message: Message):
             rem.append(temps)
     print(temps)
     temps.clear()
+    print(temps)
     rez = "\n"
     k = 0
     for i in rem[0]:
