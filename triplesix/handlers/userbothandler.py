@@ -1,3 +1,5 @@
+import asyncio
+
 from pyrogram import Client
 from pyrogram.types import Message
 from pyrogram.errors import UserNotParticipant, UserAlreadyParticipant
@@ -47,6 +49,7 @@ async def leave_all_chats(_, message: Message):
         chat_id = dialog.chat.id
         try:
             await user.leave_chat(chat_id)
+            await asyncio.sleep(1)
             left += 1
         except Exception as e:
             print(type(e).__name__)
