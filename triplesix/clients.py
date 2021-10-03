@@ -54,6 +54,7 @@ class Player:
         chat_id = message.chat.id
         try:
             await self._stream(mode, message, source, y, query)
+            return
         except FloodWait as fw:
             await message.reply(f"Getting floodwait {fw.x} second, bot sleeping")
             await asyncio.sleep(fw.x)
@@ -82,6 +83,7 @@ class Player:
         call = self.call
         if mode == "yt":
             playlist[chat_id] = [{"query": query, "mode": mode}]
+            await y.edit(get_message(chat_id, "stream").format(query))
             await call.join_group_call(
                 chat_id,
                 AudioVideoPiped(source, MediumQualityAudio(), MediumQualityVideo()),
