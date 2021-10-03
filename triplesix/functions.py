@@ -89,15 +89,14 @@ def video_downloader(query: str):
     return dur, filename, title
 
 
-a = []
-
 rem = []
 
 
 def yt_searcher(query: str):
+    a = []
     i = 0
     rez = ""
-    j = -1
+    j = 0
     for _ in range(10):
         i += 1
         res = YoutubeSearch(query, 10).to_dict()

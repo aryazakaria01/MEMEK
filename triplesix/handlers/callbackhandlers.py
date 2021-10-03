@@ -52,7 +52,6 @@ async def close_inline(_, cb: CallbackQuery):
     user_id = int(callback[1])
     message = cb.message
     rem.clear()
-    print(rem)
     person = await message.chat.get_member(cb.from_user.id)
     if cb.from_user.id != user_id:
         await cb.answer("this is not for you.", show_alert=True)

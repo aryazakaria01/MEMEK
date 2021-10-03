@@ -43,8 +43,6 @@ def add_chat(chat_id: int, lang="en"):
     if not x:
         cur.execute(f"INSERT INTO chat_ids VALUES ({chat_id}, '{lang}')")
         conn.commit()
-    else:
-        print("have")
 
 
 def set_lang(chat_id: int, lang: str):
