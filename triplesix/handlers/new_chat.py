@@ -41,6 +41,7 @@ async def chat_member_updated(_, msg: ChatMemberUpdated):
 async def on_bot_kicked(_, message: Message):
     try:
         bot_id = (await bot.get_me()).id
+        user_id = (await user.get_me()).id
         chat_id = message.chat.id
         members = message.left_chat_member
         if members.id == bot_id:
@@ -48,5 +49,11 @@ async def on_bot_kicked(_, message: Message):
             await user.send_message(chat_id, "bot left from chat, assistant left this chat too")
             await asyncio.sleep(3)
             await user.leave_chat(chat_id)
+            return
+        if members.id == user_id:
+            del_chat(chat_id)
+            await bot.send_message(chat_id, "user left from chat, bot left this chat too.")
+            await asyncio.sleep(3)
+            await bot.leave_chat(chat_id)
     except Exception as e:
         await message.reply(f"{e}")
