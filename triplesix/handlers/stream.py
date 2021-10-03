@@ -90,3 +90,19 @@ async def stream_v2(_, message: Message):
             ]
         ]
     ), disable_web_page_preview=True)
+
+
+@Client.on_message(command("playlist"))
+async def get_playlist(_, message: Message):
+    chat_id = message.chat.id
+    playlist = player.playlist
+    current = playlist[chat_id][0]
+    ples = "\n"
+    j = 0
+    for i in playlist[chat_id]:
+        j += 1
+        query = i["query"]
+        ples += f"{j}. {query}\n"
+    await message.reply(
+        f"Current streaming\n{current}\n\nOn Playlist\n\n{ples}"
+    )
