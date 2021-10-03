@@ -96,10 +96,10 @@ async def stream_v2(_, message: Message):
 async def get_playlist(_, message: Message):
     playlist = player.playlist
     if not playlist:
-        return await message.reply("No playlist")
+        await message.reply("No playlist")
     chat_id = message.chat.id
     if not player.call.get_call(chat_id):
-        return await message.reply("Not playing")
+        await message.reply("Not playing")
     current = playlist[chat_id][0]
     ples = "\n"
     j = 0
