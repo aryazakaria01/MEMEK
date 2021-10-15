@@ -16,4 +16,4 @@
 
 
 bot_username = "YuiiDev_bot"
-client_username = "Badboyanim"
+client_username = "JinakuShibagen"
