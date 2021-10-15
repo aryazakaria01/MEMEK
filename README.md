@@ -2,7 +2,7 @@
 
 telegram bot project for streaming video on telegram video chat, powered by [py-tgcalls](https://github.com/pytgcalls/pytgcalls) and [pyrogram](https://github.com/pyrogram/pyrogram)
 
-<p align="center"><a href="https://t.me/shohih_abdul2"><img src="https://telegra.ph/file/4e8717d59d74412cf0e50.jpg" width="300"></a></p>
+<p align="center"><a href="https://t.me/Badboyanim"><img src="https://telegra.ph/file/4e8717d59d74412cf0e50.jpg" width="300"></a></p>
 <p align="center">
     <a href="https://www.python.org/" > <img src="https://img.shields.io/badge/Made%20with-Python-black.svg?style=flat-square&logo=python&logoColor=blue&color=red" /></a>
     <a href="https://github.com/DoellBarr/triplesix/graphs/commit-activity" alt="Maintenance"> <img src="https://img.shields.io/badge/Maintained%3F-yes-red.svg?style=flat-square" /></a>
@@ -42,7 +42,7 @@ TAP THIS: [![GenerateString](https://img.shields.io/badge/repl.it-generateString
 
 Easy way to host this bot
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aryazakaria01/VC)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aryazakaria01/YuiVCG)
 
 
 ## VPS Deployment
