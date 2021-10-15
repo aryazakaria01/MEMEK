@@ -42,7 +42,7 @@ TAP THIS: [![GenerateString](https://img.shields.io/badge/repl.it-generateString
 
 Easy way to host this bot
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/DoellBarr/triplesix)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aryazakaria01/VC)
 
 
 ## VPS Deployment
