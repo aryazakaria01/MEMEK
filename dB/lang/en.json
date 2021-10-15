@@ -1,7 +1,7 @@
 {
   "stream": "Streaming {} in this chat",
-  "end": "bot succesfully leave from video-chat",
-  "process": "processing.. please wait.",
-  "lang_changed": "language changed to {}",
-  "localstream": "streaming the video in this chat."
+  "end": "Bot succesfully leave from video-chat",
+  "process": "Processing.. please wait.",
+  "lang_changed": "Language changed to {}",
+  "localstream": "Streaming the video in this chat."
 }
