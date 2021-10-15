@@ -2,7 +2,7 @@
   "name": "TripleSix Bot",
   "description": "Telegram bot for streaming video on your voice chat",
   "keywords": ["video chat", "streaming", "telegram"],
-  "repository": "https://github.com/DoellBarr/triplesix",
+  "repository": "https://github.com/aryazakaria01/YuiVCG",
   "stack": "container",
   "env": {
     "SESSION": {
